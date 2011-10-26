@@ -1,16 +1,13 @@
 Robot        = require "robot"
 HTTPS        = require "https"
-EventEmitter = require("events").EventEmitter
 Wobot        = require("wobot").Bot
 
 class HipChat extends Robot
   send: (user, strings...) ->
-    console.log "Sending"
     strings.forEach (str) =>
       @bot.message user.reply_to, str
 
   reply: (user, strings...) ->
-    console.log "Replying"
     strings.forEach (str) =>
       @send user, "@#{user.name} #{str}"
 
@@ -23,12 +20,9 @@ class HipChat extends Robot
       password: process.env.HUBOT_HIPCHAT_PASSWORD
       rooms:    process.env.HUBOT_HIPCHAT_ROOMS || "@All"
     
-    console.log process.env.HUBOT_HIPCHAT_NAME_TEST
-    console.log "Options:", @options
     bot = new Wobot(jid: @options.jid, name: @options.name, password: @options.password)
     mention = '@'+@options.name.split(' ')[0]
-    console.log "Bot:", bot
-
+    
     bot.onConnect =>
       console.log "Connected to HipChat"
       if @options.rooms == "@All"
@@ -48,7 +42,7 @@ class HipChat extends Robot
           response.users.forEach (user)->
             self.userForId user.user_id, user
         else
-          console.log "Can't list rooms: #{err}"
+          console.log "Can't list users: #{err}"
     bot.onError (message, stanza)->
       console.log "Received error from HipChat:", message, stanza
     bot.onMessage RegExp(mention,'i'), (channel, from, message)->    
